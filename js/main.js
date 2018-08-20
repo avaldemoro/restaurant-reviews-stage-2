@@ -80,26 +80,14 @@ initMap = () => {
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
         mapboxToken: 'pk.eyJ1IjoiYXN0ZXJ2IiwiYSI6ImNqaWR4a2sxODBnZnkzcXQ0a3R2aW5yenYifQ.VhIoWtMCcBzA6Y4RFelqTg',
         maxZoom: 18,
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" style="color: #4e342e">OpenStreetMap</a> contributors, ' +
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/" style="color: #4e342e">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://www.mapbox.com/" style="color: #4e342e">Mapbox</a>',
         id: 'mapbox.streets'
     }).addTo(newMap);
 
     updateRestaurants();
 }
-/* window.initMap = () => {
-let loc = {
-lat: 40.722216,
-lng: -73.987501
-};
-self.map = new google.maps.Map(document.getElementById('map'), {
-zoom: 12,
-center: loc,
-scrollwheel: false
-});
-updateRestaurants();
-} */
 
 /**
 * Update page and map for current restaurants.
@@ -147,7 +135,6 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
     restaurants.forEach(restaurant => {
 
         ul.append(createRestaurantHTML(restaurant));
-
     });
     addMarkersToMap();
 }
@@ -178,9 +165,10 @@ createRestaurantHTML = (restaurant) => {
     li.append(neighborhood);
 
     const more = document.createElement('a');
-    more.id = "more-details";
+    more.className = "more-restaurant-details";
     more.innerHTML = 'View Details';
-    more.setAttribute("tabindex", "1");
+    more.tabIndex = 0;
+    more.setAttribute('aria-label', 'View Details for ' + restaurant.name + ' Restaurant');
     more.href = DBHelper.urlForRestaurant(restaurant);
     li.append(more)
 
@@ -202,14 +190,3 @@ addMarkersToMap = (restaurants = self.restaurants) => {
         }
     });
 }
-
-/* addMarkersToMap = (restaurants = self.restaurants) => {
-restaurants.forEach(restaurant => {
-// Add marker to the map
-const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-google.maps.event.addListener(marker, 'click', () => {
-window.location.href = marker.url
-});
-self.markers.push(marker);
-});
-} */

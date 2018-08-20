@@ -1,7 +1,3 @@
-self.addEventListener('install', function (event) {
-    // Perform install steps
-});
-
 var CACHE_NAME = 'restaurant-cache';
 var urlsToCache = [
     '/',
@@ -11,7 +7,6 @@ var urlsToCache = [
     './js/dbhelper.js',
     './js/main.js',
     './js/restaurant_info.js',
-    './data/restaurants.json',
     './img/1.jpg',
     './img/2.jpg',
     './img/3.jpg',
@@ -33,10 +28,6 @@ self.addEventListener('install', function (event) {
             return cache.addAll(urlsToCache);
         })
     );
-});
-
-self.addEventListener('activate',  event => {
-    event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener('fetch', event => {

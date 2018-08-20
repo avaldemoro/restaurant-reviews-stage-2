@@ -1,0 +1,22 @@
+{
+  "short_name": "Restaurants",
+  "name": "MWS Restaraunt Reviews Stage 2",
+  "icons": [
+    {
+      "src": "img/icon.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "img/icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#3367D6",
+  "orientation": "portrait",
+  "theme_color": "#3367D6"
+}

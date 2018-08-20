@@ -1,5 +1,5 @@
-
 /* Common database helper functions. */
+
 class DBHelper {
     /* Database URL. */
     static get DATABASE_URL() {
@@ -7,21 +7,91 @@ class DBHelper {
         return `http://localhost:${port}/restaurants`;
     }
 
+    static createIDBStore(restaurants) {
+        // Get the compatible IndexedDB version
+        var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+
+        // Open the database
+        var open = indexedDB.open('Restaurant-Database', 1);
+
+        // Create schema
+        open.onupgradeneeded = function() {
+            var db = open.result;
+            var store = db.createObjectStore('Restaurant', {keyPath: 'id'});
+            var index = store.createIndex('by-id', 'id');
+        };
+
+        open.onerror = function(err) {
+            console.error('Something went wrong with IndexDB: ' + err.target.errorCode);
+        }
+
+        open.onsuccess = function() {
+            // Start new transaction
+            var db = open.result;
+            var tx = db.transaction('Restaurant', 'readwrite');
+            var store = tx.objectStore('Restaurant');
+            var index = store.index('by-id');
+
+            // Add the restaurant data
+            restaurants.forEach(function(restaurant) {
+                store.put(restaurant);
+            });
+
+            // Close the db when the transaction is done
+            tx.oncomplete = function() {
+                db.close();
+            };
+        }
+    }
+
+    static getCachedData(callback) {
+        var restaurants = [];
+
+        // get IndexedDB version
+        var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+        var open = indexedDB.open("Restaurant-Database", 1);
+
+        open.onsuccess = function() {
+            var db = open.result;
+            var tx = db.transaction("Restaurant", "readwrite");
+            var store = tx.objectStore("Restaurant");
+            var getData = store.getAll();
+
+            getData.onsuccess = function() {
+                callback(null, getData.result);
+            }
+
+            tx.oncomplete = function() {
+                db.close();
+            };
+        }
+
+    }
+
     /* Fetch all restaurants. */
     static fetchRestaurants(callback) {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', DBHelper.DATABASE_URL);
-        xhr.onload = () => {
-            if (xhr.status === 200) { // Got a success response from server!
-                const json = JSON.parse(xhr.responseText);
-                const restaurants = json;
-                callback(null, restaurants);
-            } else { // Oops!. Got an error from server.
-                const error = (`Request failed. Returned status of ${xhr.status}`);
-                callback(error, null);
-            }
-        };
-        xhr.send();
+        if (navigator.onLine) {
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', DBHelper.DATABASE_URL);
+            xhr.onload = () => {
+                if (xhr.status === 200) { // Got a success response from server!
+                    const restaurants = JSON.parse(xhr.responseText);
+                    DBHelper.createIDBStore(restaurants); // Cache restaurants
+                    callback(null, restaurants);
+                } else { // Oops!. Got an error from server.
+                    const error = (`Request failed. Returned status of ${xhr.status}`);
+                    callback(error, null);
+                }
+            };
+            xhr.send();
+        } else {
+            console.log('Browser is offline, using the cached data.');
+            DBHelper.getCachedData((error, restaurants) => {
+                if (restaurants.length > 0) {
+                    callback(null, restaurants);
+                }
+            });
+        }
     }
 
     /* Fetch a restaurant by its ID. */
@@ -129,16 +199,14 @@ class DBHelper {
     static imageUrlForRestaurant(restaurant) {
         return (`/img/${restaurant.photograph}.jpg`);
     }
-
     /* Map marker for a restaurant. */
     static mapMarkerForRestaurant(restaurant, map) {
         // https://leafletjs.com/reference-1.3.0.html#marker
         const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng],
-            {title: restaurant.name,
+            { title: restaurant.name,
                 alt: restaurant.name,
                 url: DBHelper.urlForRestaurant(restaurant)})
         marker.addTo(newMap);
         return marker;
     }
-
 }
