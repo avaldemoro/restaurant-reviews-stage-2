@@ -1,5 +1,4 @@
 /* Common database helper functions. */
-
 class DBHelper {
     /* Database URL. */
     static get DATABASE_URL() {
@@ -47,7 +46,7 @@ class DBHelper {
     static getCachedData(callback) {
         var restaurants = [];
 
-        // get IndexedDB version
+        // Get the compatible IndexedDB version
         var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
         var open = indexedDB.open("Restaurant-Database", 1);
 
@@ -65,7 +64,6 @@ class DBHelper {
                 db.close();
             };
         }
-
     }
 
     /* Fetch all restaurants. */
