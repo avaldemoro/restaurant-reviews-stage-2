@@ -1,7 +1,7 @@
 # Mobile Web Specialist Certification Course
 ---
 
-## Project Overview: Stage 1
+## Project Overview: Stage 2
 This repository is Stage 2 of a 3 part project that is part of the Udacity Mobile Web Specialist Nanodegree Program. This site was redesigned without the help of a CSS framework. 
 
 ![Screenshot](screenshot1.png)
